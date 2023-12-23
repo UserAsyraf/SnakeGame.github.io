@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Snake Game</title>
+    <style>
+      /* Hilangkan margin dan padding default dari browser */
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden; /* Mencegah scrollbar jika ada */
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="gameCanvas"></canvas>
+
+    <script type="module">
+      // Mendapatkan lebar dan tinggi layar
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+
+      // Mengatur ukuran canvas sesuai dengan layar
+      const canvas = document.getElementById("gameCanvas");
+      canvas.width = screenWidth;
+      canvas.height = screenHeight;
+
+      const ctx = canvas.getContext("2d", { alpha: false });
+
+      let dirs = {
+        ArrowRight: [1, 0],
+        ArrowLeft: [-1, 0],
+        ArrowDown: [0, 1],
+        ArrowUp: [0, -1],
+      };
+      let snake = [
+        [Math.floor(screenWidth / 32), Math.floor(screenHeight / 32)],
+      ]; // Ubah inisialisasi ular
+      let apple = [
+        Math.floor(Math.random() * (screenWidth / 32)),
+        Math.floor(Math.random() * (screenHeight / 32)),
+      ];
+      let dir = [1, 0];
+
+      document.addEventListener("keydown", (e) => {
+        dir = dirs[e.key] || dir;
+      });
+
+      setInterval(() => {
+        let newHead = [
+          (snake[0][0] + dir[0] + screenWidth / 32) % (screenWidth / 32),
+          (snake[0][1] + dir[1] + screenHeight / 32) % (screenHeight / 32),
+        ];
+        snake.unshift(newHead);
+
+        if (snake[0][0] === apple[0] && snake[0][1] === apple[1]) {
+          do {
+            apple = [
+              Math.floor(Math.random() * (screenWidth / 32)),
+              Math.floor(Math.random() * (screenHeight / 32)),
+            ];
+          } while (
+            snake.some(
+              (segment) => segment[0] === apple[0] && segment[1] === apple[1]
+            )
+          );
+        } else {
+          snake.pop();
+        }
+
+        ctx.clearRect(0, 0, screenWidth, screenHeight);
+        ctx.fillStyle = "red";
+        ctx.fillRect(apple[0] * 32, apple[1] * 32, 32, 32);
+        ctx.fillStyle = "lime";
+        snake.forEach((segment) =>
+          ctx.fillRect(segment[0] * 32, segment[1] * 32, 32, 32)
+        );
+      }, 125);
+    </script>
+  </body>
+</html>
